@@ -34,6 +34,12 @@ type CountyCode struct {
     WeatherCode string `xml:"weatherCode,attr"`
 }
 
+type Area struct {
+    ProvinceName string
+    CityName string
+    CountyName string
+}
+
 func ReadCityCode() {
     content, err := ioutil.ReadFile("cityCodes.xml")
     if err != nil {
@@ -58,4 +64,35 @@ func ReadCityCode() {
     }
 }
 
+func GetWeatherCode(where Area) string{
+    if where.CountyName == nil {
+        where.CountyName = where.CityName
+    }
+    content, err := ioutil.ReadFile("cityCodes.xml")
+    if err != nil {
+        log.Fatal(err)
+    }
+    var  result StringResources
+    err = xml.Unmarshal(content, &result)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    for _, line := range result.ResourceString {
+        if line.StringName != where.ProvinceName {
+            continue
+        }
+        for _, citys := range line.CityList {
+            if citys.StringName != where.CityName {
+                continue
+            }
+            for _, counties := range citys.CountyList {
+                if counties.StringName == where.CountyName {
+                    return counties.WeatherCode
+                }
+            }
+        }
+    }
+    return nil
+}
 
