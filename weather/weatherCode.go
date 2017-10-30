@@ -4,7 +4,7 @@ import (
     "encoding/xml"
     "io/ioutil"
     "log"
-    "strconv"
+    //"strconv"
 )
 
 type StringResources struct {
@@ -14,8 +14,24 @@ type StringResources struct {
 
 type ResourceString struct {
     XMLName xml.Name `xml:"province"`
-    StringName string `xml:"id,attr"`
-    InnerText string `xml:",innerxml"`
+    StringID string `xml:"id,attr"`
+    StringName string `xml:"name,attr"`
+    CityList []City `xml:"city"`
+    //InnerText string `xml:",innerxml"`
+}
+
+type City struct {
+    CityName xml.Name `xml:"city"`
+    StringID string `xml:"id,attr"`
+    StringName string `xml:"name,attr"`
+    CountyList []CountyCode `xml:"county"`
+}
+
+type CountyCode struct {
+    CountyName xml.Name `xml:"county"`
+    StringID string `xml:"id,attr"`
+    StringName string `xml:"name,attr"`
+    WeatherCode string `xml:"weatherCode,attr"`
 }
 
 func ReadCityCode() {
@@ -30,8 +46,15 @@ func ReadCityCode() {
     }
     //log.Println(result)
     //log.Println(result.ResourceString)
-    for i, line := range result.ResourceString {
-        log.Println("string[" + strconv.Itoa(i) + "]:" + line.StringName + "===" + line.InnerText)
+    for _, line := range result.ResourceString {
+        log.Println("province-id:" + line.StringID + " name:" + line.StringName)
+        for _, citys := range line.CityList {
+            log.Println("city-id:" + citys.StringID + " name:" + citys.StringName)
+            for _, counties := range citys.CountyList {
+                log.Println("county id:" + counties.StringID + " name:" + counties.StringName + " weatherCode:" + counties.WeatherCode)
+            }
+
+        }
     }
 }
 
