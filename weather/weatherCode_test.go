@@ -18,3 +18,14 @@ func TestGetWeatherCode(t *testing.T) {
 		fmt.Printf("%v, weatherCode:%s\n", w, wCode)
 	}
 }
+
+func TestGetWeatherCode1(t *testing.T) {
+    county := "深圳"
+    wCode, err := GetWeatherCodeByCounty(county)
+    if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Printf("%s, weatherCode:%s\n", county, wCode)
+	}
+}
+

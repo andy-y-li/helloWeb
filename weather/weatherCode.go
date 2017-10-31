@@ -65,6 +65,29 @@ func ReadCityCode() {
 	}
 }
 
+func GetWeatherCodeByCounty(county string) (wCode string, err error) {
+	content, err := ioutil.ReadFile("cityCodes.xml")
+	if err != nil {
+		log.Fatal(err)
+	}
+	var result StringResources
+	err = xml.Unmarshal(content, &result)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, line := range result.ResourceString {
+		for _, citys := range line.CityList {
+			for _, counties := range citys.CountyList {
+				if counties.StringName == county {
+					return counties.WeatherCode, nil
+				}
+			}
+		}
+	}
+	return "", errors.New("Not Found!")
+}
+
 func GetWeatherCode(where Area) (wCode string, err error) {
 	if where.CountyName == "" {
 		where.CountyName = where.CityName
