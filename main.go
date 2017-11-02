@@ -5,7 +5,7 @@ import (
     "net/http"
     "encoding/json"
     "strings"
-    weather "github.com/andy-y-li/helloWeb/weather"
+    weather "github.com/andy-y-li/weatherService/weather"
     "io/ioutil"
 )
 
