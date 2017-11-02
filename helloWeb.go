@@ -9,35 +9,9 @@ import (
     "io/ioutil"
 )
 
-/*
-{
-	"weatherinfo":{
-		"city":"深圳",
-		"cityid":"101280601",
-		"temp1":"14℃",
-		"temp2":"23℃",
-		"weather":"晴",
-		"img1":"n0.gif",
-		"img2":"d0.gif",
-		"ptime":"18:00"
-		}
-}
-*/
 
-type info struct {
-    city string `json:"city"`
-    cityid string `json:"cityid"`
-    temp1 string `json:"temp1"`
-    temp2 string `json:"temp2"`
-    weather string `json:"weather"`
-    img1 string `json:"img1"`
-    img2 string `json:"img2"`
-    ptime string `json:"ptime"`
-}
 
-type weatherData struct {
-    weatherInfo info `json:"weatherinfo"`
-}
+type WeatherInfo map[string]string
 
 func main() {
     http.HandleFunc("/hello", hello)
@@ -60,36 +34,50 @@ func hello(w http.ResponseWriter, r *http.Request) {
     w.Write([]byte("hello!"))
 }
 
-func query(city string) (weatherData, error) {
+/*
+{
+	"weatherinfo":{
+		"city":"深圳",
+		"cityid":"101280601",
+		"temp1":"14℃",
+		"temp2":"23℃",
+		"weather":"晴",
+		"img1":"n0.gif",
+		"img2":"d0.gif",
+		"ptime":"18:00"
+		}
+}
+*/
+func query(city string) (WeatherInfo, error) {
     wCode, err := weather.GetWeatherCodeByCounty(city)
     if err != nil {
         fmt.Println(err)
-        return weatherData{},err
+        return WeatherInfo{},err
     }
     qstr := "http://www.weather.com.cn/data/cityinfo/" + wCode + ".html"
     fmt.Println(qstr)
     resp, err := http.Get(qstr)
     if err != nil {
-        return weatherData{}, err
+        return WeatherInfo{}, err
     }
 
     defer resp.Body.Close()
 
     body, err := ioutil.ReadAll(resp.Body)
     if err != nil {
-        return weatherData{}, err
+        return WeatherInfo{}, err
     }
-    var s info
-    json.Unmarshal([]byte(string(body)), &s)
-    fmt.Println(string(body))
-    fmt.Println(s)
-
-    var d weatherData
-
-    if err := json.NewDecoder(resp.Body).Decode(&d); err != nil {
-        return weatherData{}, err
+    str := string(body)
+    var s map[string]WeatherInfo
+    fmt.Println(str)
+    err = json.Unmarshal(body, &s)
+    if err != nil {
+        return WeatherInfo{}, err
     }
+    info := s["weatherinfo"]
+    fmt.Println(info)
+    fmt.Println(info["weather"])
 
-    return d, nil
+    return info, nil
 }
 
