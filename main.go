@@ -1,37 +1,35 @@
 package main
 
 import (
-    "fmt"
-    "net/http"
-    "encoding/json"
-    "strings"
-    weather "github.com/andy-y-li/weatherService/weather"
-    "io/ioutil"
+	"encoding/json"
+	"fmt"
+	weather "github.com/andy-y-li/weatherService/weather"
+	"io/ioutil"
+	"net/http"
+	"strings"
 )
-
-
 
 type WeatherInfo map[string]string
 
 func main() {
-    http.HandleFunc("/hello", hello)
-    http.HandleFunc("/weather/", func(w http.ResponseWriter, r *http.Request) {
-        city := strings.SplitN(r.URL.Path, "/", 3)[2]
-        //fmt.Println("city:", city)
-        data, err := query(city)
-        if err != nil {
-            http.Error(w, err.Error(), http.StatusInternalServerError)
-            return
-        }
-        w.Header().Set("Content-Type", "application/json; charset=utf-8")
-        json.NewEncoder(w).Encode(data)
-    })
+	http.HandleFunc("/hello", hello)
+	http.HandleFunc("/weather/", func(w http.ResponseWriter, r *http.Request) {
+		city := strings.SplitN(r.URL.Path, "/", 3)[2]
+		//fmt.Println("city:", city)
+		data, err := query(city)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		json.NewEncoder(w).Encode(data)
+	})
 
-    http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":9090", nil)
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
-    w.Write([]byte("hello!"))
+	w.Write([]byte("hello!"))
 }
 
 /*
@@ -49,35 +47,34 @@ func hello(w http.ResponseWriter, r *http.Request) {
 }
 */
 func query(city string) (WeatherInfo, error) {
-    wCode, err := weather.GetWeatherCodeByCounty(city)
-    if err != nil {
-        fmt.Println(err)
-        return WeatherInfo{},err
-    }
-    qstr := "http://www.weather.com.cn/data/cityinfo/" + wCode + ".html"
-    fmt.Println(qstr)
-    resp, err := http.Get(qstr)
-    if err != nil {
-        return WeatherInfo{}, err
-    }
+	wCode, err := weather.GetWeatherCodeByCounty(city)
+	if err != nil {
+		fmt.Println(err)
+		return WeatherInfo{}, err
+	}
+	qstr := "http://www.weather.com.cn/data/cityinfo/" + wCode + ".html"
+	fmt.Println(qstr)
+	resp, err := http.Get(qstr)
+	if err != nil {
+		return WeatherInfo{}, err
+	}
 
-    defer resp.Body.Close()
+	defer resp.Body.Close()
 
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        return WeatherInfo{}, err
-    }
-    str := string(body)
-    var s map[string]WeatherInfo
-    fmt.Println(str)
-    err = json.Unmarshal(body, &s)
-    if err != nil {
-        return WeatherInfo{}, err
-    }
-    info := s["weatherinfo"]
-    fmt.Println(info)
-    fmt.Println(info["weather"])
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return WeatherInfo{}, err
+	}
+	str := string(body)
+	var s map[string]WeatherInfo
+	fmt.Println(str)
+	err = json.Unmarshal(body, &s)
+	if err != nil {
+		return WeatherInfo{}, err
+	}
+	info := s["weatherinfo"]
+	fmt.Println(info)
+	fmt.Println(info["weather"])
 
-    return info, nil
+	return info, nil
 }
-

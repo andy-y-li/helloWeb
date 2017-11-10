@@ -17,7 +17,7 @@ It provice a json responed of weather info.
       
 - step 3) Query weather for example:
       
-      $ curl http://localhost:8080/weather/深圳
+      $ curl http://localhost:9090/weather/深圳
       
       {"city":"深圳","cityid":"101280601","img1":"n0.gif","img2":"d0.gif","ptime":"18:00","temp1":"14℃","temp2":"23℃","weather":"晴"}
 
