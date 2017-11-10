@@ -21,6 +21,10 @@ It provice a json responed of weather info.
       
       {"city":"深圳","cityid":"101280601","img1":"n0.gif","img2":"d0.gif","ptime":"18:00","temp1":"14℃","temp2":"23℃","weather":"晴"}
 
+* BTW, I have add the service in my server, you also 
+   get the weather iofo via the command as below:
+   
+   $ curl http://1714w8z674.iok.la:25705/weather/深圳
 
 ## License ##
 
